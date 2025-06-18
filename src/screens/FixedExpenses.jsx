@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { BudgetContext } from '../BudgetContext';
 
 const FixedExpenses = ({ onNext, onBack }) => {
+  const { budgetData, setBudgetData } = useContext(BudgetContext);
   const [expenseName, setExpenseName] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState(budgetData.fixedExpenses || []);
 
   const addExpense = () => {
     if (!expenseName || !expenseAmount) return;
-    setExpenses([...expenses, { name: expenseName, amount: parseFloat(expenseAmount) }]);
+    setExpenses([
+      ...expenses,
+      { name: expenseName, amount: parseFloat(expenseAmount) }
+    ]);
     setExpenseName('');
     setExpenseAmount('');
+  };
+
+  const handleNext = () => {
+    setBudgetData({ ...budgetData, fixedExpenses: expenses });
+    onNext();
   };
 
   return (
@@ -39,7 +49,7 @@ const FixedExpenses = ({ onNext, onBack }) => {
 
       <div className="nav-buttons">
         <button onClick={onBack}>Previous</button>
-        <button onClick={onNext}>Next</button>
+        <button onClick={handleNext}>Next</button>
       </div>
     </div>
   );
