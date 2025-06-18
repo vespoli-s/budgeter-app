@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { BudgetContext } from '../BudgetContext';
 
 const SubscriptionScreen = ({ onNext, onBack }) => {
-  const [subscriptions, setSubscriptions] = useState([]);
+  const { budgetData, setBudgetData } = useContext(BudgetContext);
   const [name, setName] = useState('');
   const [cost, setCost] = useState('');
+  const [subscriptions, setSubscriptions] = useState(budgetData.subscriptions || []);
 
   const addSubscription = () => {
     if (!name || !cost) return;
     setSubscriptions([...subscriptions, { name, cost: parseFloat(cost) }]);
     setName('');
     setCost('');
+  };
+
+  const handleNext = () => {
+    setBudgetData({ ...budgetData, subscriptions });
+    onNext();
   };
 
   return (
@@ -38,7 +45,7 @@ const SubscriptionScreen = ({ onNext, onBack }) => {
 
       <div className="nav-buttons">
         <button onClick={onBack}>Previous</button>
-        <button onClick={onNext}>All Done</button>
+        <button onClick={handleNext}>All Done</button>
       </div>
     </div>
   );
