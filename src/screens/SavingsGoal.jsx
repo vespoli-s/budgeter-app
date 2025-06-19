@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { BudgetContext } from '../BudgetContext';
 
 const SavingsGoal = ({ onNext, onBack }) => {
+  const { budgetData, setBudgetData } = useContext(BudgetContext);
   const [useRule, setUseRule] = useState(true);
-  const [customPercent, setCustomPercent] = useState(20); // default 20%
+  const [customPercent, setCustomPercent] = useState(
+    budgetData.savingsGoal !== 20 ? budgetData.savingsGoal : 20
+  );
+
+  const handleNext = () => {
+    const savingsGoal = useRule ? 20 : parseFloat(customPercent);
+    setBudgetData({ ...budgetData, savingsGoal });
+    onNext();
+  };
 
   return (
     <div className="onboarding-screen">
@@ -39,7 +49,7 @@ const SavingsGoal = ({ onNext, onBack }) => {
 
       <div className="nav-buttons">
         <button onClick={onBack}>Previous</button>
-        <button onClick={onNext}>Next</button>
+        <button onClick={handleNext}>Next</button>
       </div>
     </div>
   );
