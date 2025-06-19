@@ -1,37 +1,35 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import FixedExpenses from './screens/FixedExpenses';
-import VariableExpenses from './screens/VariableExpenses';
 import SubscriptionScreen from './screens/SubscriptionScreen';
+import VariableExpenses from './screens/VariableExpenses';
 import SavingsGoal from './screens/SavingsGoal';
 import SummaryScreen from './screens/SummaryScreen';
+import Dashboard from './screens/Dashboard';
 
 const App = () => {
-  const [step, setStep] = useState(0);
-
-  const next = () => setStep(step + 1);
-  const back = () => setStep(step - 1);
-
-  const screens = [
-    <WelcomeScreen onNext={next} />,
-    <FixedExpenses onNext={next} onBack={back} />,
-    <SubscriptionScreen onNext={next} onBack={back} />,
-    <VariableExpenses onNext={next} onBack={back} />,
-    <SavingsGoal onNext={next} onBack={back} />,
-    <SummaryScreen />
-  ];
-
   return (
-    <div className="app-container">
-      {screens[step]}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<WelcomeScreen />} />
+        <Route path="/fixed" element={<FixedExpenses />} />
+        <Route path="/subscriptions" element={<SubscriptionScreen />} />
+        <Route path="/variable" element={<VariableExpenses />} />
+        <Route path="/savings" element={<SavingsGoal />} />
+        <Route path="/summary" element={<SummaryScreen />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 };
 
-const WelcomeScreen = ({ onNext }) => (
+const WelcomeScreen = () => (
   <div className="onboarding-screen">
     <h1>Welcome to Budgeter</h1>
     <p>Let’s set up your budget step by step.</p>
-    <button onClick={onNext}>Get Started</button>
+    <a href="/fixed"><button>Get Started</button></a>
   </div>
 );
 
