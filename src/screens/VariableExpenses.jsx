@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { BudgetContext } from '../BudgetContext';
 
 const VariableExpenses = ({ onNext, onBack }) => {
+  const { budgetData, setBudgetData } = useContext(BudgetContext);
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(budgetData.variableExpenses || []);
 
   const addCategory = () => {
     if (!category || !amount) return;
     setCategories([...categories, { category, amount: parseFloat(amount) }]);
     setCategory('');
     setAmount('');
+  };
+
+  const handleNext = () => {
+    setBudgetData({ ...budgetData, variableExpenses: categories });
+    onNext();
   };
 
   return (
@@ -39,7 +46,7 @@ const VariableExpenses = ({ onNext, onBack }) => {
 
       <div className="nav-buttons">
         <button onClick={onBack}>Previous</button>
-        <button onClick={onNext}>Next</button>
+        <button onClick={handleNext}>Next</button>
       </div>
     </div>
   );
