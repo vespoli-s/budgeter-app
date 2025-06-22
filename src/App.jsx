@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import PaycheckEntry from './components/PaycheckEntry';
 
 import FixedExpenses from './screens/FixedExpenses';
 import SubscriptionScreen from './screens/SubscriptionScreen';
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/summary" element={<SummaryScreen />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/paycheck" element={<PaycheckEntry />} />
       </Routes>
     </Router>
   );
