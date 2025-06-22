@@ -1,57 +1,45 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { BudgetContext } from '../BudgetContext';
 
 const Dashboard = () => {
-  const { budgetData, setBudgetData } = useContext(BudgetContext);
-  const [payAmount, setPayAmount] = useState('');
-  const [payDate, setPayDate] = useState(new Date().toISOString().split('T')[0]);
+  const { budgetData } = useContext(BudgetContext);
+  const latestPaycheck = budgetData.paycheckHistory.at(-1);
 
-  const handleSubmit = () => {
-    const netPay = parseFloat(payAmount);
-    if (!netPay || netPay <= 0) return;
+  if (!latestPaycheck) {
+    return <div className="p-4">No paycheck data available yet.</div>;
+  }
 
-    // Save paycheck to history
-    const newPay = { amount: netPay, date: payDate };
-    const updatedHistory = [...budgetData.paycheckHistory, newPay];
-    setBudgetData({ ...budgetData, paycheckHistory: updatedHistory });
-  };
+  const { amount, fixedTotal, variableTotal, subscriptionTotal, leftover } = latestPaycheck;
 
-  const fixedTotal = [
-    ...budgetData.fixedExpenses,
-    ...budgetData.subscriptions
-  ].reduce((sum, exp) => sum + exp.amount || exp.cost || 0, 0);
-
-  const remaining = payAmount ? parseFloat(payAmount) - fixedTotal : 0;
-  const savingsTarget = (payAmount * (budgetData.savingsGoal / 100)).toFixed(2);
-  const flagged = remaining < savingsTarget;
+  const needs = ((fixedTotal / amount) * 100).toFixed(1);
+  const wants = ((variableTotal / amount) * 100).toFixed(1);
+  const savings = ((leftover / amount) * 100).toFixed(1);
 
   return (
-    <div className="dashboard-screen">
-      <h2>Paycheck Breakdown</h2>
+    <div className="p-4 space-y-4">
+      <h2 className="text-xl font-semibold">Latest Paycheck Overview</h2>
+      <ul className="space-y-1">
+        <li>💵 Net Pay: ${amount}</li>
+        <li>🏠 Fixed: ${fixedTotal} ({needs}%)</li>
+        <li>🛍️ Variable: ${variableTotal} ({wants}%)</li>
+        <li>📺 Subscriptions: ${subscriptionTotal}</li>
+        <li>💰 Remaining: ${leftover} ({savings}%)</li>
+      </ul>
 
-      <input
-        type="number"
-        placeholder="Enter net paycheck ($)"
-        value={payAmount}
-        onChange={(e) => setPayAmount(e.target.value)}
-      />
-      <input
-        type="date"
-        value={payDate}
-        onChange={(e) => setPayDate(e.target.value)}
-      />
-      <button onClick={handleSubmit}>Save Paycheck</button>
-
-      {payAmount && (
-        <div className="breakdown">
-          <p><strong>Fixed Expenses:</strong> ${fixedTotal.toFixed(2)}</p>
-          <p><strong>Remaining:</strong> ${remaining.toFixed(2)}</p>
-          <p><strong>Savings Goal ({budgetData.savingsGoal}%):</strong> ${savingsTarget}</p>
-          <p>
-            <strong>Status:</strong> {flagged ? '⚠️ Below target' : '✅ On track'}
-          </p>
-        </div>
-      )}
+      <div className="mt-4">
+        <h3 className="font-medium">50/30/20 Check</h3>
+        <ul className="text-sm list-disc ml-5">
+          <li className={needs <= 50 ? 'text-green-600' : 'text-red-600'}>
+            Needs {needs}% {needs <= 50 ? '✅' : '❌'}
+          </li>
+          <li className={wants <= 30 ? 'text-green-600' : 'text-red-600'}>
+            Wants {wants}% {wants <= 30 ? '✅' : '❌'}
+          </li>
+          <li className={savings >= 20 ? 'text-green-600' : 'text-red-600'}>
+            Savings {savings}% {savings >= 20 ? '✅' : '❌'}
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };
